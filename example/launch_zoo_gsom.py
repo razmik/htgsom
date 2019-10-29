@@ -42,7 +42,7 @@ if __name__ == '__main__':
     Utils.Utilities.save_object(result_dict, output_save_location + output_save_filename)
 
     # Display
-    display = Display_Utils.Display(result_dict[0]['gsom'], None)
+    display = Display_Utils.Display(result_dict[0]['gsom'])
     display.setup_labels_for_gsom_nodemap(labels, 1, 'Names of animals', output_save_location + 'gsom_names_' + str(SF))
     display.setup_labels_for_gsom_nodemap(classes, 2, 'Categories of animals', output_save_location + 'gsom_categories_' + str(SF))
 

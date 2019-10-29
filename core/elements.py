@@ -1,5 +1,4 @@
 import random
-import numpy as np
 from util import utilities as Utils
 
 
@@ -20,33 +19,6 @@ class GSOMNodeMap:
 
     def get_pathway_id(self):
         return self.pathway_id
-
-
-class AggregateNode:
-    def __init__(self, ikasl_layer_id, weights):
-        self.ikasl_layer_id = ikasl_layer_id
-        self.weights = weights
-        self.children_pathway_ids = []
-        self.input_vector_weights = []
-
-    def select_input_vector(self, input_weight):
-        self.input_vector_weights.append(input_weight)
-
-    def add_child(self, child):
-        self.children_pathway_ids.append(child)
-
-    def get_input_vectors(self):
-        input_weights = list(input_weight.weight for input_weight in self.input_vector_weights)
-        return np.asarray(input_weights)
-
-    def get_weights(self):
-        return self.weights
-
-    def get_input_vector_count(self):
-        return len(self.input_vector_weights)
-
-    def get_children_pathway_ids(self):
-        return self.children_pathway_ids
 
 
 class GSOMNode:

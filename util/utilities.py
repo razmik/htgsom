@@ -12,7 +12,6 @@ class Utilities:
     def get_distance(vector_1, vector_2, method, divider=-1):
         if method == Params.DistanceFunction.EUCLIDEAN:
             return np.linalg.norm(vector_2 - vector_1)
-            # return spatial.distance.euclidean(vector_2, vector_1)
         elif method == Params.DistanceFunction.COSINE:
             if np.count_nonzero(vector_2) != 0:
                 return spatial.distance.cosine(vector_2, vector_1)
@@ -33,19 +32,6 @@ class Utilities:
         gamma_distance = np.linalg.norm(np.dot(alphas.T, (global_context - recurrent_weights)))
         return gamma_distance
 
-        # gamma_distance = 0.0
-        # for i in range(0, len(global_context)):
-        #     gamma_distance += (alphas[i] * spatial.distance.euclidean(global_context[i], recurrent_weights[i]))
-        # return gamma_distance
-
-    @staticmethod
-    def get_decremental_alphas(num_contexts):
-        iWe = np.zeros(num_contexts)  # iWe[:] = 1 / nWeights
-        for h in range(0, len(iWe)):
-            iWe[h] = np.exp(-h)  # 1. / nWeights + np.exp(-h)
-        iWe[:] = iWe[:] / sum(iWe)  # print iWe[:]
-        return iWe
-
     @staticmethod
     def get_max_node_distance_square(node_1, node_2):
         return max(math.pow(node_1.x - node_2.x, 2), math.pow(node_1.y - node_2.y, 2))
@@ -60,20 +46,6 @@ class Utilities:
         _, winner = min(nodemap.items(), key=lambda node: Utilities.get_distance(node[1].weights, input_vector,
                                                                                  distance_function, distance_divider))
         return winner
-
-    @staticmethod
-    def select_winner_recurrent(nodemap, global_context, alphas):
-
-        if global_context.shape[0] < 2:
-            keys = list(nodemap.keys())
-            dims = nodemap[keys[0]].dimensions
-            values = np.asarray([nodemap[k].recurrent_weights.reshape((dims)) for k in keys])
-            global_context_dim = np.tile(global_context, (values.shape[0], 1))
-            distances = np.sqrt(np.sum((values - global_context_dim)**2, axis=1))
-            return nodemap[keys[np.argmin(distances)]]
-        else:
-            _, winner = min(nodemap.items(), key=lambda node: Utilities.get_distance_recurrent(global_context, node[1].recurrent_weights, alphas))
-            return winner
 
     @staticmethod
     def select_input_to_closest_aggregate_node(aggr_node_list, input_weight, distance_function, distance_divider):
@@ -124,38 +96,3 @@ class Utilities:
     @staticmethod
     def load_object(filename):
         return pickle.load(open(filename+".pickle", "rb"))
-
-
-class SugenoFuzzyIntregal:
-
-    @staticmethod
-    def get_sugeno_fuzzy_integral(h_values, g_values, sugeno_lambda):
-
-        n = len(h_values)
-        min_array = []
-        array_list = []
-
-        index_array = np.arange(0, n)
-
-        for i in range(0, n):
-            for j in range(1, (n-1)):
-                if h_values[j-1] < h_values[j]:
-                    index_array[j - 1], index_array[j] = index_array[j], index_array[j - 1]
-                    h_values[j - 1], h_values[j] = h_values[j], h_values[j - 1]
-
-        for i in range(0, n):
-            array_list.append(g_values[index_array[i]])
-            min_array.append(min(h_values[i], SugenoFuzzyIntregal.get_combination_value(array_list, sugeno_lambda)))
-
-        new_min_array = sorted(min_array)
-
-        return new_min_array[-1]
-
-    @staticmethod
-    def get_combination_value(values, sugeno_lambda):
-
-        if len(values) == 1:
-            return values[0]
-        else:
-            temp = SugenoFuzzyIntregal.get_combination_value(values[1:], sugeno_lambda)
-            return values[0] + temp + (sugeno_lambda * values[0] * temp)

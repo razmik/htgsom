@@ -6,8 +6,6 @@ from core import growth_handler as Growth_Handler
 from core import elements as Elements
 from util import utilities as Utils
 
-import time
-
 
 class GSOM:
 
