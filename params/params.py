@@ -19,7 +19,7 @@ class GSOMParameters:
     def __init__(self, spread_factor, learning_itr, smooth_itr, age_threshold=200, max_neighbourhood_radius=4,
                  start_learning_rate=0.3, smooth_neighbourhood_radius_factor=0.5, smooth_learning_factor=0.5,
                  learn_smooth_sample_size=-1, distance=DistanceFunction.EUCLIDEAN, distance_divider=-1, fd=0.1,
-                 alpha=0.9, r=3.8, tau_b=0.3, tau_n=0.1, temporal_context_count=2, beta=0.7, forget_itr_count=2):
+                 alpha=0.9, r=3.8, tau_b=0.3, tau_n=0.1, forget_itr_count=2):
 
         # Compulsory Parameters
         self.SPREAD_FACTOR = spread_factor
@@ -45,10 +45,6 @@ class GSOMParameters:
         # Habituation Parameters
         self.TAU_B = tau_b
         self.TAU_N = tau_n
-
-        # Recurrent Self-organization Parameters
-        self.NUMBER_OF_TEMPORAL_CONTEXTS = temporal_context_count  # [0] is default weight. i.e. min value should be 1.
-        self.BETA = beta
 
     def get_gt(self, dimensions):
         return -dimensions * math.log(self.SPREAD_FACTOR)
