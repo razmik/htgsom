@@ -2,7 +2,7 @@ import sys
 import math
 import numpy as np
 from util import utilities as Utils
-from core2 import elements as Elements
+from core import elements as Elements
 from params import params as Params
 
 

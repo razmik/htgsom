@@ -1,8 +1,9 @@
 import math
 import random
 import numpy as np
-from core2 import growth_handler as Growth_Handler
-from core2 import elements as Elements
+from tqdm import tqdm
+from core import growth_handler as Growth_Handler
+from core import elements as Elements
 from util import utilities as Utils
 
 import time
@@ -23,12 +24,11 @@ class GSOM:
         self._initialize_network(self.dimensions)
         param = self.parameters
 
-        total = 0
         # Optimise python references: that are reevaluated each time through the loop
         grow_in = self._grow_for_single_iteration_and_single_input
 
         learning_rate = param.START_LEARNING_RATE
-        for i in range(0, param.LEARNING_ITERATIONS):
+        for i in tqdm(range(0, param.LEARNING_ITERATIONS), desc='Learning'):
 
             if i != 0:
                 learning_rate = self._get_learning_rate(param, learning_rate, len(self.gsom_nodemap))
@@ -36,16 +36,11 @@ class GSOM:
             neighbourhood_radius = self._get_neighbourhood_radius(param.LEARNING_ITERATIONS, i,
                                                                   param.MAX_NEIGHBOURHOOD_RADIUS)
 
-            start = time.time()
             for k in random.sample(range(0, len(self.inputs)), self.learn_smooth_sample_size):
                 grow_in(self.inputs[k], learning_rate, neighbourhood_radius)
 
             # Remove all the nodes above the age threshold
             Utils.Utilities.remove_older_nodes(self.gsom_nodemap, self.parameters.AGE_THRESHOLD)
-
-            end = time.time()
-            print('learning', i, 'took', round(end-start, 2))
-            total += (end-start)
 
         return self.gsom_nodemap
 
@@ -55,8 +50,7 @@ class GSOM:
         reduced_neighbourhood_radius = self.parameters.MAX_NEIGHBOURHOOD_RADIUS * self.parameters.SMOOTHING_NEIGHBOURHOOD_RADIUS_FACTOR
 
         smooth = self._smooth_for_single_iteration_and_single_input
-
-        for i in range(0, self.parameters.SMOOTHING_ITERATIONS):
+        for i in tqdm(range(0, self.parameters.SMOOTHING_ITERATIONS), desc='Smoothing'):
 
             if i != 0:
                 learning_rate = self._get_learning_rate(self.parameters, learning_rate, len(self.gsom_nodemap))
@@ -64,11 +58,8 @@ class GSOM:
             neighbourhood_radius = self._get_neighbourhood_radius(self.parameters.SMOOTHING_ITERATIONS, i,
                                                                   reduced_neighbourhood_radius)
 
-            start = time.time()
             for k in random.sample(range(0, len(self.inputs)), self.learn_smooth_sample_size):
                 smooth(self.inputs[k], learning_rate, neighbourhood_radius)
-            end = time.time()
-            print('smoothing', i, 'took', round(end-start, 2))
 
         return self.gsom_nodemap
 
